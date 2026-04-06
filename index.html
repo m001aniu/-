@@ -1,234 +1,257 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>外幣計算機</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>全球旅遊神機</title>
     <style>
         :root {
-  --bg-color: #f6f3ed;
-  --container-bg: #ffffff;
-  --text-main: #5d574f;
-  --text-label: #8c8376;
-  --btn-num-bg: #ebe7de;
-  --btn-num-text: #6f675a;
-  --btn-func-bg: #d9e0d8;
-  --btn-func-text: #506152;
-  --btn-op-bg: #9fa8a0;
-  --btn-op-text: #ffffff;
-  --btn-ac-bg: #e6b3b3;
-  --btn-ac-text: #ffffff;
-  --btn-eq-bg: #d9cdbd;
-  --btn-eq-text: #6f675a;
-}
+            --bg-color: #f6f3ed;
+            --container-bg: #ffffff;
+            --text-main: #5d574f;
+            --text-label: #8c8376;
+            --btn-num-bg: #ebe7de;
+            --btn-num-text: #6f675a;
+            --btn-func-bg: #d9e0d8;
+            --btn-func-text: #506152;
+            --btn-op-bg: #9fa8a0;
+            --btn-op-text: #ffffff;
+            --btn-ac-bg: #e6b3b3;
+            --btn-ac-text: #ffffff;
+            --btn-eq-bg: #d9cdbd;
+            --btn-eq-text: #6f675a;
+        }
 
-body { font-family: -apple-system, sans-serif; background: var(--bg-color); padding: 10px; display: flex; justify-content: center; }
-.container { background: var(--container-bg); width: 100%; max-width: 420px; padding: 20px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); color: var(--text-main); }
-h2 { text-align: center; margin-bottom: 15px; font-size: 1.2rem; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg-color); padding: 10px; display: flex; justify-content: center; margin: 0; }
+        .container { background: var(--container-bg); width: 100%; max-width: 420px; padding: 20px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); color: var(--text-main); box-sizing: border-box; }
+        h2 { text-align: center; margin-bottom: 15px; font-size: 1.2rem; }
 
-.custom-calc { background: #fdfdfc; padding: 15px; border-radius: 20px; border: 1px solid #f2f1ed; margin-bottom: 12px; }
-.calc-monitor { text-align: right; padding: 5px 12px; min-height: 80px; display: flex; flex-direction: column; justify-content: flex-end; margin-bottom: 15px; border-bottom: 1px solid #f2f1ed; }
-.calc-formula { font-size: 28px; color: var(--text-main); font-family: monospace; min-height: 35px; word-break: break-all; }
-.calc-result { font-size: 18px; color: #bcaaa4; font-family: monospace; margin-top: 5px; min-height: 22px; }
+        /* 佈局控制 */
+        .main-layout { display: flex; flex-direction: column; }
 
-.calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; justify-items: center; }
-.c-btn { border: none; width: 65px; height: 65px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.1s; -webkit-tap-highlight-color: transparent; }
-.c-btn:active { transform: scale(0.92); opacity: 0.8; }
-.c-btn.btn-num { background: var(--btn-num-bg); color: var(--btn-num-text); }
-.c-btn.btn-func { background: var(--btn-func-bg); color: var(--btn-func-text); }
-.c-btn.btn-op { background: var(--btn-op-bg); color: var(--btn-op-text); }
-.c-btn.btn-ac { background: var(--btn-ac-bg); color: var(--btn-ac-text); }
-.c-btn.btn-eq { background: var(--btn-eq-bg); color: var(--btn-eq-text); }
+        @media (min-width: 768px) or (orientation: landscape) {
+            .container { max-width: 950px; }
+            .main-layout { flex-direction: row; gap: 25px; align-items: flex-start; }
+            .calc-section { flex: 1; position: sticky; top: 10px; }
+            .rates-section { flex: 1.2; }
+        }
 
-.apply-title { font-size: 11px; color: var(--text-label); margin: 18px 0 8px 5px; font-weight: bold; }
-.chip-group { display: flex; flex-wrap: wrap; gap: 6px; }
+        /* 計算機 UI */
+        .custom-calc { background: #fdfdfc; padding: 15px; border-radius: 20px; border: 1px solid #f2f1ed; }
+        .calc-monitor { text-align: right; padding: 5px 12px; min-height: 80px; display: flex; flex-direction: column; justify-content: flex-end; margin-bottom: 15px; border-bottom: 1px solid #f2f1ed; }
+        .calc-formula { font-size: 28px; color: var(--text-main); font-family: monospace; min-height: 35px; word-break: break-all; }
+        .calc-result { font-size: 18px; color: #bcaaa4; font-family: monospace; margin-top: 5px; min-height: 22px; }
 
-/* 國旗鎖定核心 */
-.chip { background: #f1efea; color: var(--text-main); padding: 7px 10px; border-radius: 12px; font-size: 13px; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
-.chip span { font-size: 14px; line-height: 1; display: inline-block; }
-.chip:active { background: #9da8a0; color: white; }
+        .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; justify-items: center; }
+        .c-btn { border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.1s; -webkit-tap-highlight-color: transparent; outline: none; }
+        .c-btn:active { transform: scale(0.92); opacity: 0.8; }
+        .btn-num { background: var(--btn-num-bg); color: var(--btn-num-text); }
+        .btn-func { background: var(--btn-func-bg); color: var(--btn-func-text); }
+        .btn-op { background: var(--btn-op-bg); color: var(--btn-op-text); }
+        .btn-ac { background: var(--btn-ac-bg); color: var(--btn-ac-text); }
+        .btn-eq { background: var(--btn-eq-bg); color: var(--btn-eq-text); }
 
-.divider { border: 0; border-top: 1px solid #f0efeb; margin: 18px 0; }
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.input-group label { display: block; margin-bottom: 3px; font-size: 11px; font-weight: bold; color: var(--text-label); white-space: nowrap; overflow: hidden; }
-.input-group input { width: 100%; padding: 11px; border: 1px solid #e6e2da; border-radius: 10px; box-sizing: border-box; font-size: 17px; background: #fafaf9; color: var(--text-main); }
-.twd-highlight input { background-color: #ebe7de; border: 1.5px solid #dcd7cd; font-weight: bold; }
+        .apply-title { font-size: 11px; color: var(--text-label); margin: 18px 0 8px 5px; font-weight: bold; }
+        .chip-group { display: flex; flex-wrap: wrap; gap: 6px; }
+        .chip { background: #f1efea; color: var(--text-main); padding: 7px 10px; border-radius: 12px; font-size: 13px; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+        .chip span { font-size: 14px; line-height: 1; }
+        .chip:active { background: #9da8a0; color: white; }
 
-.hint { font-size: 10px; color: #a9a296; text-align: center; margin-top: 25px; border-top: 1px solid #f0efeb; padding-top: 15px; }
-.hint strong { display: block; color: var(--text-label); margin-bottom: 8px; font-size: 11px; }
-.hint-line { margin-bottom: 6px; line-height: 1.6; letter-spacing: 0.3px; }
-.disclaimer { font-size: 9px; color: #c0b7ad; margin-top: 12px; font-style: italic; }
+        /* 換算格 UI */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .input-group label { display: block; margin-bottom: 3px; font-size: 11px; font-weight: bold; color: var(--text-label); white-space: nowrap; }
+        .input-group input { width: 100%; padding: 11px; border: 1px solid #e6e2da; border-radius: 10px; box-sizing: border-box; font-size: 17px; background: #fafaf9; color: var(--text-main); outline: none; }
+        .twd-highlight input { background-color: #ebe7de; border: 1.5px solid #dcd7cd; font-weight: bold; }
 
+        /* 參考匯率樣式 (統一放在右側區塊底部) */
+        .hint { font-size: 10px; color: #a9a296; text-align: center; line-height: 1.8; margin-top: 25px; border-top: 1px solid #f0efeb; padding-top: 15px; width: 100%; }
+        .hint strong { display: block; color: var(--text-label); margin-bottom: 5px; font-size: 11px; }
+        .disclaimer { font-size: 9px; color: #c0b7ad; margin-top: 10px; font-style: italic; }
     </style>
 </head>
 <body>
+
 <div class="container">
     <h2>全球旅遊神機 🇹🇼</h2>
 
-    <div class="custom-calc">
-        <div class="calc-monitor">
-            <div class="calc-formula" id="calc-formula">0</div>
-            <div class="calc-result" id="calc-display">0</div>
+    <div class="main-layout">
+        <div class="calc-section">
+            <div class="custom-calc">
+                <div class="calc-monitor">
+                    <div class="calc-formula" id="calc-formula">0</div>
+                    <div class="calc-result" id="calc-display">0</div>
+                </div>
+                <div class="calc-buttons">
+                    <button class="c-btn btn-ac" onclick="c_clear()">AC</button>
+                    <button class="c-btn btn-func" onclick="c_op('(')">( )</button>
+                    <button class="c-btn btn-func" onclick="c_op('%')">%</button>
+                    <button class="c-btn btn-op" onclick="c_op('/')">÷</button>
+                    <button class="c-btn btn-num" onclick="c_num('7')">7</button>
+                    <button class="c-btn btn-num" onclick="c_num('8')">8</button>
+                    <button class="c-btn btn-num" onclick="c_num('9')">9</button>
+                    <button class="c-btn btn-op" onclick="c_op('*')">×</button>
+                    <button class="c-btn btn-num" onclick="c_num('4')">4</button>
+                    <button class="c-btn btn-num" onclick="c_num('5')">5</button>
+                    <button class="c-btn btn-num" onclick="c_num('6')">6</button>
+                    <button class="c-btn btn-op" onclick="c_op('-')">-</button>
+                    <button class="c-btn btn-num" onclick="c_num('1')">1</button>
+                    <button class="c-btn btn-num" onclick="c_num('2')">2</button>
+                    <button class="c-btn btn-num" onclick="c_num('3')">3</button>
+                    <button class="c-btn btn-op" onclick="c_op('+')">+</button>
+                    <button class="c-btn btn-num" onclick="c_num('0')">0</button>
+                    <button class="c-btn btn-num" onclick="c_num('.')">.</button>
+                    <button class="c-btn btn-num" onclick="c_back()">⌫</button>
+                    <button class="c-btn btn-eq" onclick="c_eval()">=</button>
+                </div>
+
+                <p class="apply-title">計算結果帶入：</p>
+                <div class="chip-group">
+                    <span class="chip" onclick="applyTo('twd')"><span>🇹🇼</span>台</span>
+                    <span class="chip" onclick="applyTo('cny')"><span>🇨🇳</span>中</span>
+                    <span class="chip" onclick="applyTo('jpy')"><span>🇯🇵</span>日</span>
+                    <span class="chip" onclick="applyTo('krw')"><span>🇰🇷</span>韓</span>
+                    <span class="chip" onclick="applyTo('usd')"><span>🇺🇸</span>美</span>
+                    <span class="chip" onclick="applyTo('hkd')"><span>🇭🇰</span>港</span>
+                    <span class="chip" onclick="applyTo('thb')"><span>🇹🇭</span>泰</span>
+                    <span class="chip" onclick="applyTo('php')"><span>🇵🇭</span>菲</span>
+                    <span class="chip" onclick="applyTo('sgd')"><span>🇸🇬</span>新</span>
+                    <span class="chip" onclick="applyTo('myr')"><span>🇲🇾</span>馬</span>
+                    <span class="chip" onclick="applyTo('vnd')"><span>🇻🇳</span>越</span>
+                    <span class="chip" onclick="applyTo('idr')"><span>🇮🇩</span>印</span>
+                    <span class="chip" onclick="applyTo('eur')"><span>🇪🇺</span>歐</span>
+                    <span class="chip" onclick="applyTo('gbp')"><span>🇬🇧</span>英</span>
+                    <span class="chip" onclick="applyTo('aud')"><span>🇦🇺</span>澳</span>
+                    <span class="chip" onclick="applyTo('cad')"><span>🇨🇦</span>加</span>
+                </div>
+            </div>
         </div>
-        
-        <div class="calc-buttons">
-            <button class="c-btn btn-ac" onclick="c_clear()">AC</button>
-            <button class="c-btn btn-func" onclick="c_op('(')">( )</button>
-            <button class="c-btn btn-func" onclick="c_op('%')">%</button>
-            <button class="c-btn btn-op" onclick="c_op('/')">÷</button>
-            <button class="c-btn btn-num" onclick="c_num('7')">7</button>
-            <button class="c-btn btn-num" onclick="c_num('8')">8</button>
-            <button class="c-btn btn-num" onclick="c_num('9')">9</button>
-            <button class="c-btn btn-op" onclick="c_op('*')">×</button>
-            <button class="c-btn btn-num" onclick="c_num('4')">4</button>
-            <button class="c-btn btn-num" onclick="c_num('5')">5</button>
-            <button class="c-btn btn-num" onclick="c_num('6')">6</button>
-            <button class="c-btn btn-op" onclick="c_op('-')">-</button>
-            <button class="c-btn btn-num" onclick="c_num('1')">1</button>
-            <button class="c-btn btn-num" onclick="c_num('2')">2</button>
-            <button class="c-btn btn-num" onclick="c_num('3')">3</button>
-            <button class="c-btn btn-op" onclick="c_op('+')">+</button>
-            <button class="c-btn btn-num" onclick="c_num('0')">0</button>
-            <button class="c-btn btn-num" onclick="c_num('.')">.</button>
-            <button class="c-btn btn-num" onclick="c_back()">⌫</button>
-            <button class="c-btn btn-eq" onclick="c_eval()">=</button>
+
+        <div class="rates-section">
+            <div class="grid">
+                <div class="input-group twd-highlight"><label>🇹🇼 台幣 (TWD)</label><input type="number" id="twd" oninput="updateAll('twd')"></div>
+                <div class="input-group"><label>🇨🇳 人民幣 (CNY)</label><input type="number" id="cny" oninput="updateAll('cny')"></div>
+                <div class="input-group"><label>🇯🇵 日幣 (JPY)</label><input type="number" id="jpy" oninput="updateAll('jpy')"></div>
+                <div class="input-group"><label>🇰🇷 韓元 (KRW)</label><input type="number" id="krw" oninput="updateAll('krw')"></div>
+                <div class="input-group"><label>🇺🇸 美金 (USD)</label><input type="number" id="usd" oninput="updateAll('usd')"></div>
+                <div class="input-group"><label>🇭🇰 港幣 (HKD)</label><input type="number" id="hkd" oninput="updateAll('hkd')"></div>
+                <div class="input-group"><label>🇹🇭 泰銖 (THB)</label><input type="number" id="thb" oninput="updateAll('thb')"></div>
+                <div class="input-group"><label>🇵🇭 菲律賓 (PHP)</label><input type="number" id="php" oninput="updateAll('php')"></div>
+                <div class="input-group"><label>🇸🇬 新幣 (SGD)</label><input type="number" id="sgd" oninput="updateAll('sgd')"></div>
+                <div class="input-group"><label>🇲🇾 馬幣 (MYR)</label><input type="number" id="myr" oninput="updateAll('myr')"></div>
+                <div class="input-group"><label>🇻🇳 越南盾 (VND)</label><input type="number" id="vnd" oninput="updateAll('vnd')"></div>
+                <div class="input-group"><label>🇮🇩 印尼盾 (IDR)</label><input type="number" id="idr" oninput="updateAll('idr')"></div>
+                <div class="input-group"><label>🇪🇺 歐元 (EUR)</label><input type="number" id="eur" oninput="updateAll('eur')"></div>
+                <div class="input-group"><label>🇬🇧 英鎊 (GBP)</label><input type="number" id="gbp" oninput="updateAll('gbp')"></div>
+                <div class="input-group"><label>🇦🇺 澳幣 (AUD)</label><input type="number" id="aud" oninput="updateAll('aud')"></div>
+                <div class="input-group"><label>🇨🇦 加幣 (CAD)</label><input type="number" id="cad" oninput="updateAll('cad')"></div>
+            </div>
+
+            <div class="hint">
+                <strong>參考匯率</strong>
+                <div>中 4.5 / 日 0.21 / 韓 0.024 / 美 32.5 / 港 4.15</div>
+                <div>泰 0.95 / 菲 0.58 / 新 24.1 / 馬 7.1 / 越 0.0013</div>
+                <div>印 0.002 / 歐 35 / 英 42 / 澳 21.5 / 加 22.8</div>
+                <p class="disclaimer">※ 實際請以銀行牌告為準</p>
+            </div>
         </div>
-
-        <p class="apply-title">計算結果帶入：</p>
-        <div class="chip-group">
-            <span class="chip" onclick="applyTo('twd')"><span>🇹🇼</span>台</span>
-            <span class="chip" onclick="applyTo('cny')"><span>🇨🇳</span>中</span>
-            <span class="chip" onclick="applyTo('jpy')"><span>🇯🇵</span>日</span>
-            <span class="chip" onclick="applyTo('krw')"><span>🇰🇷</span>韓</span>
-            <span class="chip" onclick="applyTo('usd')"><span>🇺🇸</span>美</span>
-            <span class="chip" onclick="applyTo('hkd')"><span>🇭🇰</span>港</span>
-            <span class="chip" onclick="applyTo('thb')"><span>🇹🇭</span>泰</span>
-            <span class="chip" onclick="applyTo('php')"><span>🇵🇭</span>菲</span>
-            <span class="chip" onclick="applyTo('sgd')"><span>🇸🇬</span>新</span>
-            <span class="chip" onclick="applyTo('myr')"><span>🇲🇾</span>馬</span>
-            <span class="chip" onclick="applyTo('vnd')"><span>🇻🇳</span>越</span>
-            <span class="chip" onclick="applyTo('idr')"><span>🇮🇩</span>印</span>
-            <span class="chip" onclick="applyTo('eur')"><span>🇪🇺</span>歐</span>
-            <span class="chip" onclick="applyTo('gbp')"><span>🇬🇧</span>英</span>
-        </div>
-    </div>
-
-    <hr class="divider">
-
-    <div class="grid">
-        <div class="input-group twd-highlight"><label>🇹🇼 台幣 (TWD)</label><input type="number" id="twd" oninput="updateAll('twd')"></div>
-        <div class="input-group"><label>🇨🇳 人民幣 (CNY)</label><input type="number" id="cny" oninput="updateAll('cny')"></div>
-        <div class="input-group"><label>🇯🇵 日幣 (JPY)</label><input type="number" id="jpy" oninput="updateAll('jpy')"></div>
-        <div class="input-group"><label>🇰🇷 韓元 (KRW)</label><input type="number" id="krw" oninput="updateAll('krw')"></div>
-        <div class="input-group"><label>🇺🇸 美金 (USD)</label><input type="number" id="usd" oninput="updateAll('usd')"></div>
-        <div class="input-group"><label>🇭🇰 港幣 (HKD)</label><input type="number" id="hkd" oninput="updateAll('hkd')"></div>
-        <div class="input-group"><label>🇹🇭 泰銖 (THB)</label><input type="number" id="thb" oninput="updateAll('thb')"></div>
-        <div class="input-group"><label>🇵🇭 菲律賓 (PHP)</label><input type="number" id="php" oninput="updateAll('php')"></div>
-        <div class="input-group"><label>🇸🇬 新幣 (SGD)</label><input type="number" id="sgd" oninput="updateAll('sgd')"></div>
-        <div class="input-group"><label>🇲🇾 馬幣 (MYR)</label><input type="number" id="myr" oninput="updateAll('myr')"></div>
-        <div class="input-group"><label>🇻🇳 越南盾 (VND)</label><input type="number" id="vnd" oninput="updateAll('vnd')"></div>
-        <div class="input-group"><label>🇮🇩 印尼盾 (IDR)</label><input type="number" id="idr" oninput="updateAll('idr')"></div>
-        <div class="input-group"><label>🇪🇺 歐元 (EUR)</label><input type="number" id="eur" oninput="updateAll('eur')"></div>
-        <div class="input-group"><label>🇬🇧 英鎊 (GBP)</label><input type="number" id="gbp" oninput="updateAll('gbp')"></div>
-    </div>
-
-    <hr class="divider">
-
-    <div class="hint">
-        <strong>參考匯率：</strong>
-        <div class="hint-line">中 4.5 / 日 0.21 / 韓 0.024 / 美 32.5</div>
-        <div class="hint-line">港 4.15 / 泰 0.95 / 菲 0.58 / 新 24.1 / 馬 7.1</div>
-        <div class="hint-line">越 0.0013 / 印 0.002 / 歐 35 / 英 42</div>
-        <p class="disclaimer">※ 匯率僅供參考，實際請以銀行牌告為準</p>
     </div>
 </div>
 
-    <script>
-        const rates = { cny: 4.5, jpy: 0.21, krw: 0.024, usd: 32.5, hkd: 4.15, thb: 0.95, php: 0.58, sgd: 24.1, myr: 7.1, vnd: 0.0013, idr: 0.0020, eur: 35.0, gbp: 42.0 };
+<script>
+    const rates = { cny: 4.5, jpy: 0.21, krw: 0.024, usd: 32.5, hkd: 4.15, thb: 0.95, php: 0.58, sgd: 24.1, myr: 7.1, vnd: 0.0013, idr: 0.0020, eur: 35.0, gbp: 42.0, aud: 21.5, cad: 22.8 };
 
-function updateAll(sourceId) {
-    const val = parseFloat(document.getElementById(sourceId).value);
-    if (isNaN(val)) {
-        document.querySelectorAll('.grid input').forEach(i => i.value = '');
-        return;
-    }
-    let twdBase = (sourceId === 'twd') ? val : val * rates[sourceId];
-    if (sourceId !== 'twd') document.getElementById('twd').value = Math.round(twdBase);
-    for (let key in rates) {
-        if (key !== sourceId) {
-            let res = twdBase / rates[key];
-            const isLarge = (key === 'vnd' || key === 'idr' || key === 'krw');
-            document.getElementById(key).value = isLarge ? Math.round(res) : res.toFixed(2);
+    function updateAll(sourceId) {
+        const val = parseFloat(document.getElementById(sourceId).value);
+        if (isNaN(val)) {
+            document.querySelectorAll('.grid input').forEach(i => i.value = '');
+            return;
+        }
+        let twdBase = (sourceId === 'twd') ? val : val * rates[sourceId];
+        if (sourceId !== 'twd') document.getElementById('twd').value = Math.round(twdBase);
+        for (let key in rates) {
+            if (key !== sourceId) {
+                let res = twdBase / rates[key];
+                const isLarge = (key === 'vnd' || key === 'idr' || key === 'krw');
+                document.getElementById(key).value = isLarge ? Math.round(res) : res.toFixed(2);
+            }
         }
     }
-}
 
-let c_exp = ""; 
-let currentResult = "0";
+    let c_exp = ""; 
+    let currentResult = "0";
 
-function c_num(n) { c_exp += n; c_refresh(); }
-function c_op(o) {
-    if (o === '(') {
-        const leftCount = (c_exp.match(/\(/g) || []).length;
-        const rightCount = (c_exp.match(/\)/g) || []).length;
-        const lastChar = c_exp.slice(-1);
-        const ops = ['+', '-', '*', '/', '(', '×', '÷'];
-        if (leftCount > rightCount && !ops.includes(lastChar) && c_exp !== "") { c_exp += ')'; } 
-        else { c_exp += '('; }
-    } else {
-        const lastChar = c_exp.slice(-1);
-        const ops = ['+', '-', '*', '/', '×', '÷'];
-        if (ops.includes(lastChar)) { c_exp = c_exp.slice(0,-1) + o; } else { c_exp += o; }
+    function c_num(n) { c_exp += n; c_refresh(); }
+    function c_op(o) {
+        if (o === '(') {
+            const leftCount = (c_exp.match(/\(/g) || []).length;
+            const rightCount = (c_exp.match(/\)/g) || []).length;
+            const lastChar = c_exp.slice(-1);
+            const ops = ['+', '-', '*', '/', '(', '×', '÷'];
+            if (leftCount > rightCount && !ops.includes(lastChar) && c_exp !== "") { c_exp += ')'; } 
+            else { c_exp += '('; }
+        } else {
+            const lastChar = c_exp.slice(-1);
+            const ops = ['+', '-', '*', '/', '×', '÷'];
+            if (ops.includes(lastChar)) { c_exp = c_exp.slice(0,-1) + o; } else { c_exp += o; }
+        }
+        c_refresh();
     }
-    c_refresh();
-}
 
-function c_clear() { c_exp = ""; currentResult = "0"; c_refresh(); }
-function c_back() { c_exp = c_exp.slice(0, -1); c_refresh(); }
+    function c_clear() { c_exp = ""; currentResult = "0"; c_refresh(); }
+    function c_back() { c_exp = c_exp.slice(0, -1); c_refresh(); }
 
-function c_refresh() {
-    const formulaEl = document.getElementById('calc-formula');
-    const displayEl = document.getElementById('calc-display');
-    formulaEl.innerText = c_exp.replace(/\*/g, '×').replace(/\//g, '÷') || "0";
-    try {
-        if (c_exp !== "") {
+    function c_refresh() {
+        const formulaEl = document.getElementById('calc-formula');
+        const displayEl = document.getElementById('calc-display');
+        formulaEl.innerText = c_exp.replace(/\*/g, '×').replace(/\//g, '÷') || "0";
+        try {
+            if (c_exp !== "") {
+                let checkExp = c_exp;
+                const leftCount = (checkExp.match(/\(/g) || []).length;
+                const rightCount = (checkExp.match(/\)/g) || []).length;
+                for(let i=0; i < (leftCount - rightCount); i++) { checkExp += ')'; }
+                let tempRes = eval(checkExp.replace(/×/g, '*').replace(/÷/g, '/'));
+                currentResult = tempRes.toString();
+                displayEl.innerText = Number.isInteger(tempRes) ? tempRes.toLocaleString() : parseFloat(tempRes.toFixed(6));
+            } else { displayEl.innerText = "0"; }
+        } catch (e) {}
+    }
+
+    function c_eval() {
+        try {
             let checkExp = c_exp;
             const leftCount = (checkExp.match(/\(/g) || []).length;
             const rightCount = (checkExp.match(/\)/g) || []).length;
             for(let i=0; i < (leftCount - rightCount); i++) { checkExp += ')'; }
-            let tempRes = eval(checkExp.replace(/×/g, '*').replace(/÷/g, '/'));
-            currentResult = tempRes.toString();
-            displayEl.innerText = Number.isInteger(tempRes) ? tempRes.toLocaleString() : parseFloat(tempRes.toFixed(6));
-        } else { displayEl.innerText = "0"; }
-    } catch (e) {}
-}
+            let finalRes = eval(checkExp.replace(/×/g, '*').replace(/÷/g, '/'));
+            c_exp = finalRes.toString();
+            currentResult = c_exp;
+            c_refresh();
+        } catch (e) { document.getElementById('calc-display').innerText = "Error"; }
+    }
 
-function c_eval() {
-    try {
-        let checkExp = c_exp;
-        const leftCount = (checkExp.match(/\(/g) || []).length;
-        const rightCount = (checkExp.match(/\)/g) || []).length;
-        for(let i=0; i < (leftCount - rightCount); i++) { checkExp += ')'; }
-        let finalRes = eval(checkExp.replace(/×/g, '*').replace(/÷/g, '/'));
-        c_exp = finalRes.toString();
-        currentResult = c_exp;
-        c_refresh();
-    } catch (e) { document.getElementById('calc-display').innerText = "Error"; }
-}
+    function applyTo(code) {
+        c_eval();
+        const res = parseFloat(currentResult);
+        if (isNaN(res)) return;
+        document.getElementById(code).value = res;
+        updateAll(code);
+        const display = document.getElementById('calc-display');
+        display.style.color = '#e6b3b3';
+        setTimeout(() => { display.style.color = '#bcaaa4'; }, 500);
+    }
 
-function applyTo(code) {
-    c_eval();
-    const res = parseFloat(currentResult);
-    if (isNaN(res)) return;
-    document.getElementById(code).value = res;
-    updateAll(code);
-    const display = document.getElementById('calc-display');
-    display.style.color = '#e6b3b3';
-    setTimeout(() => { display.style.color = '#bcaaa4'; }, 500);
-}
-
-
-    </script>
+    document.addEventListener('keydown', (e) => {
+        if (/[0-9.]/.test(e.key)) c_num(e.key);
+        if (e.key === '+') c_op('+');
+        if (e.key === '-') c_op('-');
+        if (e.key === '*') c_op('*');
+        if (e.key === '/') c_op('/');
+        if (e.key === 'Enter') { e.preventDefault(); c_eval(); }
+        if (e.key === 'Backspace') c_back();
+        if (e.key === 'Escape') c_clear();
+    });
+</script>
 
 </body>
 </html>
