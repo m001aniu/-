@@ -28,12 +28,16 @@
 
         /* 佈局控制 */
         .main-layout { display: flex; flex-direction: column; }
+        
+        /* 手機直式專用的分隔線 */
+        .mobile-divider { border: 0; border-top: 1px solid #f0efeb; margin: 25px 0; display: block; }
 
         @media (min-width: 768px) or (orientation: landscape) {
             .container { max-width: 950px; }
             .main-layout { flex-direction: row; gap: 25px; align-items: flex-start; }
             .calc-section { flex: 1; position: sticky; top: 10px; }
             .rates-section { flex: 1.2; }
+            .mobile-divider { display: none; } /* 橫向時隱藏分隔線 */
         }
 
         /* 計算機 UI */
@@ -63,7 +67,7 @@
         .input-group input { width: 100%; padding: 11px; border: 1px solid #e6e2da; border-radius: 10px; box-sizing: border-box; font-size: 17px; background: #fafaf9; color: var(--text-main); outline: none; }
         .twd-highlight input { background-color: #ebe7de; border: 1.5px solid #dcd7cd; font-weight: bold; }
 
-        /* 參考匯率樣式 (統一放在右側區塊底部) */
+        /* 參考匯率樣式 */
         .hint { font-size: 10px; color: #a9a296; text-align: center; line-height: 1.8; margin-top: 25px; border-top: 1px solid #f0efeb; padding-top: 15px; width: 100%; }
         .hint strong { display: block; color: var(--text-label); margin-bottom: 5px; font-size: 11px; }
         .disclaimer { font-size: 9px; color: #c0b7ad; margin-top: 10px; font-style: italic; }
@@ -125,6 +129,8 @@
                 </div>
             </div>
         </div>
+
+        <hr class="mobile-divider">
 
         <div class="rates-section">
             <div class="grid">
